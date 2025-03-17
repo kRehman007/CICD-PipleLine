@@ -2,6 +2,7 @@
   "name": "package.json",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://krehman007.github.io/CICD-PipleLine",
   "type": "module",
   "scripts": {
     "dev": "vite",
