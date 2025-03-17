@@ -1,28 +1,23 @@
-name: Node.js CI
+name: Node.js CI and Deploy
 
 on:
   push:
     branches: ["main"]
 
 permissions:
-  contents: write # Ensure GITHUB_TOKEN has write access
+  contents: "write"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.x
           cache: "npm"
 
       - run: npm ci
@@ -32,24 +27,25 @@ jobs:
       - run: npm test
 
   deploy:
-    needs: build # Wait for the build job to complete
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4 # Check out the repository
+      - uses: actions/checkout@v4
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x # Use a specific Node.js version
+          node-version: 20.x
           cache: "npm"
 
       - run: npm ci
 
-      - run: npm run build --if-present # Build the app
+      - run: npm run build --if-present
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist # Replace with your build output folder
+          publish_dir: ./dist # Use the dist folder
+          branch: gh-pages # Use the gh-pages branch
